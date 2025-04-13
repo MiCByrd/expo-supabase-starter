@@ -95,6 +95,36 @@ Choose the appropriate approach based on your needs:
 - Use direct PNPM filtering for daily development
 - Use Turborepo for build processes and CI/CD pipelines
 
+## Local Supabase Setup
+
+This monorepo includes a script to easily set up a local Supabase instance for development:
+
+```bash
+# One-command setup for local Supabase
+pnpm supabase:setup
+```
+
+This script will:
+1. Check if Docker is running
+2. Install Supabase CLI if needed
+3. Start a local Supabase instance
+4. Create a `.env.development` file with the correct credentials
+5. Generate TypeScript types from your database schema
+
+### Supabase Commands
+
+- `pnpm supabase:setup`: First-time setup and start
+- `pnpm supabase:start`: Start the local Supabase instance
+- `pnpm supabase:stop`: Stop the local Supabase instance
+- `pnpm supabase:status`: Check the status of your local Supabase
+
+### Accessing Supabase Studio
+
+Your local Supabase Studio is available at:
+- http://localhost:54323
+
+This gives you a web interface to manage your database, authentication, storage, and more.
+
 ## Monorepo Development Workflow
 
 ### Working with Packages

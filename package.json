@@ -11,7 +11,11 @@
     "lint": "turbo run lint",
     "typecheck": "pnpm --filter @monorepo/shared --filter mobile typecheck",
     "build": "turbo run build",
-    "gen:types": "turbo run gen:types"
+    "gen:types": "turbo run gen:types",
+    "supabase:setup": "./scripts/setup-supabase.sh",
+    "supabase:start": "pnpm --filter @monorepo/supabase start",
+    "supabase:stop": "pnpm --filter @monorepo/supabase stop",
+    "supabase:status": "pnpm --filter @monorepo/supabase status"
   },
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
