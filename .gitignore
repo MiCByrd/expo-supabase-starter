@@ -10,7 +10,12 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# Environment variables
 .env
+.env.development
+.env.staging
+.env.production
+!.env.example
 
 .cursorrules
 
