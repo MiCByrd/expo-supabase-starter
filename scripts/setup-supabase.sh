@@ -28,10 +28,9 @@ fi
 echo -e "${YELLOW}Navigating to Supabase package...${NC}"
 cd "$(dirname "$0")/../packages/supabase" || exit
 
-# Check if Supabase is already running
+# Check if Supabase is already running by checking Docker containers
 echo -e "${YELLOW}Checking if Supabase is already running...${NC}"
-SUPABASE_STATUS=$(supabase status 2>&1)
-if [[ $SUPABASE_STATUS == *"running"* ]]; then
+if docker ps | grep -q supabase_db; then
   echo -e "${GREEN}Supabase is already running.${NC}"
 else
   # Start Supabase
