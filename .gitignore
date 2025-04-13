@@ -23,6 +23,9 @@ web-build/
 */*/tsconfig.tsbuildinfo
 */*/node_modules/.cache/
 
+# Generated Supabase files
+packages/supabase/supabase/
+
 .cursorrules
 
 # macOS
