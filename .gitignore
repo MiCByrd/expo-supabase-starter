@@ -15,7 +15,13 @@ web-build/
 .env.development
 .env.staging
 .env.production
+apps/mobile/.env
+apps/mobile/.env.development
+apps/mobile/.env.staging
+apps/mobile/.env.production
+packages/*/.env*
 !.env.example
+!apps/mobile/.env.example
 
 # Turborepo
 .turbo/
