@@ -9,7 +9,8 @@
   "include": [
     "migrations/**/*",
     "functions/**/*",
-    "seed/**/*"
+    "seed/**/*",
+    "**/*.md"
   ],
   "exclude": ["node_modules"]
 }
