@@ -7,7 +7,8 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "inputs": ["**/*.ts", "**/*.tsx", "tsconfig.json"]
     },
     "start": {
       "cache": false,
