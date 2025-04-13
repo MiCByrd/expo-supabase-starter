@@ -8,7 +8,7 @@
     "ios": "turbo run ios",
     "web": "turbo run web",
     "lint": "turbo run lint",
-    "typecheck": "pnpm --filter '{@monorepo/shared,mobile}' typecheck",
+    "typecheck": "pnpm --filter @monorepo/shared --filter mobile typecheck",
     "build": "turbo run build",
     "gen:types": "turbo run gen:types"
   },
