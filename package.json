@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev:mobile": "turbo run dev:mobile",
+    "dev:mobile": "pnpm --filter mobile dev:mobile",
+    "dev:mobile:turbo": "turbo run dev:mobile",
     "android": "turbo run android",
     "ios": "turbo run ios",
     "web": "turbo run web",
