@@ -33,7 +33,6 @@ else
   echo -e "${GREEN}No running Supabase containers found.${NC}"
 fi
 
-# Return to original directory
-cd "$(dirname "$0")/.." || exit
+# Just print the completion message, no need to navigate
 
 echo -e "${GREEN}=== Supabase shutdown complete! ===${NC}"
