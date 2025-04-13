@@ -56,7 +56,9 @@ Copy `.env.example` to create these files with the appropriate values.
 
 ## Commands
 
-- `pnpm dev:mobile`: Start the mobile app
+### Main Commands
+
+- `pnpm dev:mobile`: Start the mobile app (using direct PNPM filtering)
 - `pnpm android`: Run on Android
 - `pnpm ios`: Run on iOS
 - `pnpm web`: Run on web
@@ -64,6 +66,72 @@ Copy `.env.example` to create these files with the appropriate values.
 - `pnpm typecheck`: Type check all packages
 - `pnpm build`: Build all packages
 - `pnpm gen:types`: Generate TypeScript types from Supabase
+
+### PNPM vs Turborepo
+
+This monorepo uses both direct PNPM workspace filtering and Turborepo for different use cases:
+
+#### Direct PNPM Filtering
+```bash
+pnpm --filter <package-name> <command>
+```
+
+- Used for interactive development scripts (`pnpm dev:mobile`)
+- Maintains stdin/stdout passthrough for interactive CLI tools
+- Best for development servers that require user input
+- Example: `pnpm --filter mobile dev:mobile`
+
+#### Turborepo
+```bash
+pnpm <command>:turbo
+```
+
+- Used for build pipelines with complex dependencies
+- Provides caching and optimized execution
+- Best for CI/CD and non-interactive tasks
+- Example: `pnpm dev:mobile:turbo` (alternative for CI/CD environments)
+
+Choose the appropriate approach based on your needs:
+- Use direct PNPM filtering for daily development
+- Use Turborepo for build processes and CI/CD pipelines
+
+## Monorepo Development Workflow
+
+### Working with Packages
+
+When developing across multiple packages:
+
+1. **Make changes in the shared package**:
+   ```bash
+   cd packages/shared
+   # Edit files...
+   pnpm build
+   ```
+
+2. **Use the changes in the mobile app**:
+   ```bash
+   # Changes are automatically available due to workspace references
+   cd apps/mobile
+   pnpm dev:mobile
+   ```
+
+### Common Workflows
+
+- **Adding a new shared utility**:
+  1. Create the utility in `packages/shared/src/utils/`
+  2. Export it in the appropriate index.ts file
+  3. Run `pnpm build` in the shared package
+  4. Import from `@monorepo/shared` in the mobile app
+
+- **Creating Supabase edge functions**:
+  1. Add function in `packages/supabase/functions/`
+  2. Test locally with `cd packages/supabase && supabase functions serve`
+  3. Deploy with `pnpm --filter @monorepo/supabase deploy:functions`
+
+- **Generating database types**:
+  1. Make schema changes in Supabase
+  2. Run `pnpm gen:types` to update TypeScript definitions
+  3. Types are available throughout the monorepo
 
 ## Benefits of This Monorepo
 
@@ -94,6 +162,26 @@ Contributions to this starter project are highly encouraged and welcome! If you 
 ## License
 
 This repository is licensed under the MIT License. You are granted the freedom to use, modify, and distribute the code for personal or commercial purposes. For more details, please refer to the [LICENSE](https://github.com/FlemingVincent/supabase-starter/blob/main/LICENSE) file.
+
+## Troubleshooting
+
+### Common Issues
+
+- **Metro bundler can't find dependencies**
+  - Ensure your metro.config.js is properly configured to look in both the package's and root node_modules
+  - Try clearing Metro cache: `cd apps/mobile && npx expo start -c`
+
+- **Type errors with shared package imports**
+  - Run `pnpm build` in the shared package to ensure type definitions are current
+  - Check that tsconfig.json paths are correctly configured
+
+- **Interactive commands not working through Turborepo**
+  - Use direct PNPM filtering instead: `pnpm --filter mobile dev:mobile`
+  - Interactive CLI tools work best with direct filtering
+
+- **Dependency version conflicts**
+  - Check for duplicate dependencies with `pnpm why <package-name>`
+  - Use consistent versions across packages when possible
 
 ## Developed with
 
