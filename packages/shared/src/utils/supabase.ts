@@ -2,12 +2,11 @@ import "react-native-url-polyfill/auto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import { AppState } from "react-native";
-// Will be implemented in Step 9
-// import { getEnvironmentConfig } from '../constants/config';
+import { getEnvironmentConfig } from '../constants/config';
 
-// const config = getEnvironmentConfig();
-const supabaseUrl = process.env.EXPO_PUBLIC_API_URL as string;
-const supabaseKey = process.env.EXPO_PUBLIC_API_KEY as string;
+const config = getEnvironmentConfig();
+const supabaseUrl = config.supabaseUrl;
+const supabaseKey = config.supabaseAnonKey;
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
