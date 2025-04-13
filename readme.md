@@ -46,13 +46,33 @@ pnpm dev:mobile
 
 ## Environment Setup
 
-The project supports different environments:
+The project supports different environments with a single source of truth for environment variables:
 
-- Development: `.env.development`
-- Staging: `.env.staging`
-- Production: `.env.production`
+- Development: `.env.development` (in root directory)
+- Staging: `.env.staging` (in root directory)
+- Production: `.env.production` (in root directory)
 
 Copy `.env.example` to create these files with the appropriate values.
+
+### Environment Variable Architecture
+
+This monorepo follows these principles for environment management:
+
+1. **Single source of truth**: All environment variables are defined ONLY in the root `.env.*` files
+2. **Shared access**: The `@monorepo/shared` package provides access to these variables through its `getEnvironmentConfig()` function
+3. **No duplication**: Individual apps should not have their own `.env` files
+4. **Type safety**: Environment variables are accessed through strongly-typed interfaces
+
+Example of proper environment variable usage in any app:
+
+```typescript
+// Import from shared package
+import { getEnvironmentConfig } from "@monorepo/shared";
+
+// Get typed config with all variables
+const config = getEnvironmentConfig();
+console.log(config.supabaseUrl);
+```
 
 ## Commands
 
