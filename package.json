@@ -3,12 +3,17 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev:mobile": "pnpm --filter mobile start",
-    "android": "pnpm --filter mobile android",
-    "ios": "pnpm --filter mobile ios",
-    "web": "pnpm --filter mobile web",
-    "lint": "pnpm --filter '*' lint",
-    "typecheck": "pnpm --filter '*' typecheck"
+    "dev:mobile": "turbo run dev:mobile",
+    "android": "turbo run android",
+    "ios": "turbo run ios",
+    "web": "turbo run web",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "build": "turbo run build",
+    "gen:types": "turbo run gen:types"
   },
-  "packageManager": "pnpm@8.x"
+  "packageManager": "pnpm@8.x",
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
 }
