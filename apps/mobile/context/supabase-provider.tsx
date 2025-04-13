@@ -7,127 +7,128 @@ import { supabase } from "@/config/supabase";
 SplashScreen.preventAutoHideAsync();
 
 type SupabaseContextProps = {
-	user: User | null;
-	session: Session | null;
-	initialized?: boolean;
-	signUp: (email: string, password: string) => Promise<void>;
-	signInWithPassword: (email: string, password: string) => Promise<void>;
-	signOut: () => Promise<void>;
-	onLayoutRootView: () => Promise<void>;
+  user: User | null;
+  session: Session | null;
+  initialized?: boolean;
+  signUp: (email: string, password: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  onLayoutRootView: () => Promise<void>;
 };
 
 type SupabaseProviderProps = {
-	children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export const SupabaseContext = createContext<SupabaseContextProps>({
-	user: null,
-	session: null,
-	initialized: false,
-	signUp: async () => { },
-	signInWithPassword: async () => { },
-	signOut: async () => { },
-	onLayoutRootView: async () => { },
+  user: null,
+  session: null,
+  initialized: false,
+  signUp: async () => { },
+  signInWithPassword: async () => { },
+  signOut: async () => { },
+  onLayoutRootView: async () => { },
 });
 
 export const useSupabase = () => useContext(SupabaseContext);
 
 export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
-	const router = useRouter();
-	const segments = useSegments();
-	const [user, setUser] = useState<User | null>(null);
-	const [session, setSession] = useState<Session | null>(null);
-	const [initialized, setInitialized] = useState<boolean>(false);
-	const [appIsReady, setAppIsReady] = useState<boolean>(false);
+  const router = useRouter();
+  const segments = useSegments();
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [appIsReady, setAppIsReady] = useState<boolean>(false);
 
-	const signUp = async (email: string, password: string) => {
-		const { error } = await supabase.auth.signUp({
-			email,
-			password,
-		});
-		if (error) {
-			throw error;
-		}
-	};
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      throw error;
+    }
+  };
 
-	const signInWithPassword = async (email: string, password: string) => {
-		const { error } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
-		if (error) {
-			throw error;
-		}
-	};
+  const signInWithPassword = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      throw error;
+    }
+  };
 
-	const signOut = async () => {
-		const { error } = await supabase.auth.signOut();
-		if (error) {
-			throw error;
-		}
-	};
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw error;
+    }
+  };
 
-	useEffect(() => {
-		async function prepare() {
-			try {
-				const { data: { session } } = await supabase.auth.getSession();
-				setSession(session);
-				setUser(session ? session.user : null);
-				setInitialized(true);
+  useEffect(() => {
+    async function prepare() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session ? session.user : null);
+        setInitialized(true);
 
-				// Remove subscription variable since it's unused
-				const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-					setSession(session);
-					setUser(session ? session.user : null);
-				});
+        // Call onAuthStateChange without storing the return value
+        supabase.auth.onAuthStateChange((_event, session) => {
+          setSession(session);
+          setUser(session ? session.user : null);
+        });
 
-				await new Promise(resolve => setTimeout(resolve, 100));
-			} catch (e) {
-				console.warn(e);
-			} finally {
-				setAppIsReady(true);
-			}
-		}
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
 
-		prepare();
-	}, []);
+    prepare();
+  }, []);
 
-	useEffect(() => {
-		if (!initialized || !appIsReady) return;
+  useEffect(() => {
+    if (!initialized || !appIsReady) return;
 
-		// Check if segments[1] exists before accessing it
-		const inProtectedGroup = segments.length > 1 && segments[1] === "(protected)";
+    // Type-safe check for protected segment
+    // @ts-ignore: segments is defined by expo-router but TypeScript doesn't recognize it properly
+    const inProtectedGroup = segments.length > 1 && segments[1] === "(protected)";
 
-		if (session && !inProtectedGroup) {
-			router.replace("/(app)/(protected)");
-		} else if (!session) {
-			router.replace("/(app)/welcome");
-		}
-	}, [initialized, appIsReady, session, segments, router]);
+    if (session && !inProtectedGroup) {
+      router.replace("/(app)/(protected)");
+    } else if (!session) {
+      router.replace("/(app)/welcome");
+    }
+  }, [initialized, appIsReady, session, segments, router]);
 
-	const onLayoutRootView = useCallback(async () => {
-		if (appIsReady) {
-			await SplashScreen.hideAsync();
-		}
-	}, [appIsReady]);
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
 
-	if (!initialized || !appIsReady) {
-		return null;
-	}
+  if (!initialized || !appIsReady) {
+    return null;
+  }
 
-	return (
-		<SupabaseContext.Provider
-			value={{
-				user,
-				session,
-				initialized,
-				signUp,
-				signInWithPassword,
-				signOut,
-				onLayoutRootView,
-			}}
-		>
-			{children}
-		</SupabaseContext.Provider>
-	);
+  return (
+    <SupabaseContext.Provider
+      value={{
+        user,
+        session,
+        initialized,
+        signUp,
+        signInWithPassword,
+        signOut,
+        onLayoutRootView,
+      }}
+    >
+      {children}
+    </SupabaseContext.Provider>
+  );
 };
