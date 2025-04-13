@@ -75,7 +75,8 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 				setUser(session ? session.user : null);
 				setInitialized(true);
 
-				const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+				// Remove subscription variable since it's unused
+				const { data } = supabase.auth.onAuthStateChange((_event, session) => {
 					setSession(session);
 					setUser(session ? session.user : null);
 				});
@@ -94,14 +95,15 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 	useEffect(() => {
 		if (!initialized || !appIsReady) return;
 
-		const inProtectedGroup = segments[1] === "(protected)";
+		// Check if segments[1] exists before accessing it
+		const inProtectedGroup = segments.length > 1 && segments[1] === "(protected)";
 
 		if (session && !inProtectedGroup) {
 			router.replace("/(app)/(protected)");
 		} else if (!session) {
 			router.replace("/(app)/welcome");
 		}
-	}, [initialized, appIsReady, session]);
+	}, [initialized, appIsReady, session, segments, router]);
 
 	const onLayoutRootView = useCallback(async () => {
 		if (appIsReady) {

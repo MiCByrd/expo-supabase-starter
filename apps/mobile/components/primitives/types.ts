@@ -27,8 +27,9 @@ interface Insets {
 	right?: number;
 }
 
-type PointerDownOutsideEvent = CustomEvent<{ originalEvent: PointerEvent }>;
-type FocusOutsideEvent = CustomEvent<{ originalEvent: FocusEvent }>;
+// For web platforms
+type PointerDownOutsideEvent = { originalEvent: PointerEvent };
+type FocusOutsideEvent = { originalEvent: FocusEvent };
 
 /**
  * Certain props are only available on the native version of the component.
