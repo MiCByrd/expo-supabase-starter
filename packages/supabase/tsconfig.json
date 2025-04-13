@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": true,
+    "lib": ["ESNext"],
+    "rootDir": "."
+  },
+  "include": [
+    "migrations/**/*",
+    "functions/**/*",
+    "seed/**/*",
+    "**/*.md"
+  ],
+  "exclude": ["node_modules"]
+}

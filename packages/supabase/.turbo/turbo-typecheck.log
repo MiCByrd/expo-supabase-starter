@@ -1,0 +1,6 @@
+
+> @monorepo/supabase@0.0.1 typecheck /Users/cbyrd/code/expo-supabase-starter/packages/supabase
+> tsc --noEmit
+
+error TS18003: No inputs were found in config file '/Users/cbyrd/code/expo-supabase-starter/packages/supabase/tsconfig.json'. Specified 'include' paths were '["migrations/**/*","functions/**/*","seed/**/*"]' and 'exclude' paths were '["node_modules"]'.
+ ELIFECYCLE  Command failed with exit code 2.
