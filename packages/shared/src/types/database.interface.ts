@@ -1,22 +1,33 @@
 import { Database } from './database';
 
 // Export base table types for direct use
-export type Tables = Database['public']['Tables'];
+export type TablesBase = Database['public']['Tables'];
 
-// Strongly typed table rows (examples - will be populated with actual tables later)
-export type UserRow = Tables['users']['Row'];
-export type ProfileRow = Tables['profiles']['Row'];
+// Helper type for Supabase query responses
+export type QueryResult<T> = T extends Array<infer U> ? U[] : T;
 
-// Define strongly typed insert and update payloads
-export type UserInsert = Tables['users']['Insert'];
-export type UserUpdate = Tables['users']['Update'];
-export type ProfileInsert = Tables['profiles']['Insert'];
-export type ProfileUpdate = Tables['profiles']['Update'];
+// Basic placeholder types for tables that don't exist yet
+// These will be replaced by actual schema types once tables are created
+export type UserRow = {
+  id: string;
+  email: string;
+  created_at?: string;
+};
+
+export type ProfileRow = {
+  id: string;
+  user_id: string;
+  name?: string;
+  avatar_url?: string;
+};
+
+// Placeholder insert/update types
+export type UserInsert = Omit<UserRow, 'id'> & { id?: string };
+export type UserUpdate = Partial<UserInsert>;
+export type ProfileInsert = Omit<ProfileRow, 'id'> & { id?: string };
+export type ProfileUpdate = Partial<ProfileInsert>;
 
 // Define strongly typed relation responses
 export interface UserWithProfile extends UserRow {
   profile: ProfileRow;
 }
-
-// Helper type for Supabase query responses
-export type QueryResult<T> = T extends Array<infer U> ? U[] : T;

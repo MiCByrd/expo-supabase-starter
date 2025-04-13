@@ -193,6 +193,31 @@ Contributions to this starter project are highly encouraged and welcome! If you 
 
 This repository is licensed under the MIT License. You are granted the freedom to use, modify, and distribute the code for personal or commercial purposes. For more details, please refer to the [LICENSE](https://github.com/FlemingVincent/supabase-starter/blob/main/LICENSE) file.
 
+## Next Steps After Setup
+
+After setting up the monorepo and local Supabase, here are the recommended next steps:
+
+1. **Create Supabase database tables**:
+   - Use the Supabase Studio at http://localhost:54323 to create tables
+   - Typical tables include users, profiles, etc.
+   - After creating tables, run `pnpm gen:types` to update TypeScript definitions
+
+2. **Migrate Supabase client usage**:
+   - The current app uses `@/config/supabase` for the Supabase client
+   - Eventually you'll want to update imports to use `@monorepo/shared` package:
+     ```typescript
+     // Change from
+     import { supabase } from "@/config/supabase";
+     
+     // To
+     import { supabase } from "@monorepo/shared";
+     ```
+
+3. **Develop using the monorepo structure**:
+   - Add shared utilities in `packages/shared/src/utils/`
+   - Create Edge Functions in `packages/supabase/functions/`
+   - Develop the mobile app in `apps/mobile/`
+
 ## Troubleshooting
 
 ### Common Issues

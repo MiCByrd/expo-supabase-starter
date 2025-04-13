@@ -1,4 +1,4 @@
-export * from './database';
+export { Database } from './database';
 export * from './database.interface';
 
 // Additional utility types
