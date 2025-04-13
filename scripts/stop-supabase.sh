@@ -29,8 +29,23 @@ if [ "$CONTAINERS" -gt 0 ]; then
   fi
   
   echo -e "${GREEN}All Supabase containers stopped.${NC}"
+  
+  # Clean up stopped containers
+  echo -e "${YELLOW}Cleaning up stopped Supabase containers...${NC}"
+  if docker ps -a | grep -q supabase; then
+    docker rm $(docker ps -a -q --filter name=supabase_) 2>/dev/null
+    echo -e "${GREEN}Removed stopped Supabase containers.${NC}"
+  fi
 else
   echo -e "${GREEN}No running Supabase containers found.${NC}"
+  
+  # Check for stopped containers
+  echo -e "${YELLOW}Checking for stopped Supabase containers...${NC}"
+  if docker ps -a | grep -q supabase; then
+    echo -e "${YELLOW}Found stopped Supabase containers. Removing...${NC}"
+    docker rm $(docker ps -a -q --filter name=supabase_) 2>/dev/null
+    echo -e "${GREEN}Removed stopped Supabase containers.${NC}"
+  fi
 fi
 
 # Just print the completion message, no need to navigate
