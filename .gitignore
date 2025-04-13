@@ -17,6 +17,12 @@ web-build/
 .env.production
 !.env.example
 
+# Turborepo
+.turbo/
+*/.turbo/
+*/*/tsconfig.tsbuildinfo
+*/*/node_modules/.cache/
+
 .cursorrules
 
 # macOS
