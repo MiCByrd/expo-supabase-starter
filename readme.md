@@ -46,27 +46,65 @@ pnpm dev:mobile
 
 ## Environment Setup
 
-The project supports different environments with a single source of truth for environment variables:
+The project supports different environments through environment variable files:
 
-- Development: `.env.development` (in root directory)
-- Staging: `.env.staging` (in root directory)
-- Production: `.env.production` (in root directory)
+### Required Environment Files
 
-Copy `.env.example` to create these files with the appropriate values.
+1. **Root level** (used by setup scripts and shared packages):
+   - `.env.development` - For development environment
+   - `.env.staging` - For staging environment (optional)
+   - `.env.production` - For production environment
+   - `.env` - Default environment file
 
-### Environment Variable Architecture
+2. **Mobile app level** (required even if variables exist at root level):
+   - `apps/mobile/.env` - Environment variables for the mobile app
 
-This monorepo follows these principles for environment management:
+Copy the corresponding `.env.example` files to create these files with appropriate values.
 
-1. **Single source of truth**: All environment variables are defined ONLY in the root `.env.*` files
-2. **Shared access**: The `@monorepo/shared` package provides access to these variables through its `getEnvironmentConfig()` function
-3. **No duplication**: Individual apps should not have their own `.env` files
-4. **Type safety**: Environment variables are accessed through strongly-typed interfaces
+### Available Environment Variables
 
-Example of proper environment variable usage in any app:
+#### Root Level (/.env*)
+
+```
+# Common variables
+NODE_ENV=development  # Can be development, staging, or production
+
+# Supabase variables
+EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# For deployment
+SUPABASE_PROJECT_REF=your_project_ref
+```
+
+#### Mobile App Level (/apps/mobile/.env)
+
+```
+# Required Supabase connection details
+EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+### Environment Variable Usage
+
+**Important Note**: The mobile app currently requires its own `.env` file with Supabase connection details, even if they are also defined at the root level. This is due to how Expo handles environment variables.
+
+#### In Mobile App:
 
 ```typescript
-// Import from shared package
+// Direct usage in the mobile app
+import { supabase } from "@/config/supabase";
+
+// The supabase client is already configured with the environment variables
+const { data } = await supabase.from('table').select('*');
+```
+
+#### In Shared Package (Future Enhancement):
+
+```typescript
+// Future pattern for using environment config from shared package
 import { getEnvironmentConfig } from "@monorepo/shared";
 
 // Get typed config with all variables
