@@ -84,7 +84,6 @@ SUPABASE_PROJECT_REF=your_project_ref
 # Required Supabase connection details
 EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 ### Environment Variable Usage
