@@ -57,7 +57,10 @@ The project supports different environments through environment variable files:
    - `.env` - Default environment file
 
 2. **Mobile app level** (required even if variables exist at root level):
-   - `apps/mobile/.env` - Environment variables for the mobile app
+   - `apps/mobile/.env.development` - For development environment
+   - `apps/mobile/.env.staging` - For staging environment (optional)
+   - `apps/mobile/.env.production` - For production environment
+   - `apps/mobile/.env` - Default environment file
 
 Copy the corresponding `.env.example` files to create these files with appropriate values.
 
