@@ -98,9 +98,9 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
 **Important Note**: The mobile app requires its own `.env` file with Supabase connection details, even if they are also defined at the root level. This is due to how Expo handles environment variables.
 
-To synchronize environment variables between root and mobile app, run:
+To clean up environment files and synchronize variables between root and mobile app, run:
 ```bash
-./scripts/sync-env.sh
+pnpm env:cleanup
 ```
 
 #### In Mobile App:

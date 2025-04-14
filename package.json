@@ -16,7 +16,7 @@
     "supabase:start": "pnpm --filter @monorepo/supabase start",
     "supabase:stop": "./scripts/stop-supabase.sh",
     "supabase:status": "pnpm --filter @monorepo/supabase status",
-    "env:sync": "./scripts/sync-env.sh"
+    "env:cleanup": "./scripts/cleanup-env-files.sh"
   },
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
