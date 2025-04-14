@@ -17,6 +17,7 @@ This is not supposed to be a template, boilerplate or a framework. It is an opin
 - [🗄️ Project Structure](docs/project-structure.md)
 - [🧱 Components And Styling](docs/components-and-styling.md)
 - [🗃️ State Management](docs/state-management.md)
+- [🔄 CI/CD Environment Setup](docs/ci-cd-environments.md)
 
 ## Structure
 
@@ -46,32 +47,36 @@ pnpm dev:mobile
 
 ## Environment Setup
 
-The project supports different environments through environment variable files:
+This project uses a simplified environment approach focused on local development:
+
+### Environment Strategy
+
+1. **Local Development**: 
+   - Uses a single `.env` file at both root and app levels
+   - Automatically created by the setup script
+   - Contains local development settings
+
+2. **CI/CD Environments**:
+   - Staging and production environments are handled in CI/CD pipelines
+   - Environment variables are set in your CI/CD platform
+   - No environment-specific files needed locally
+   - See [CI/CD Environment Setup](docs/ci-cd-environments.md) for details
 
 ### Required Environment Files
 
 1. **Root level** (used by setup scripts and shared packages):
-   - `.env.development` - For development environment
-   - `.env.staging` - For staging environment (optional)
-   - `.env.production` - For production environment
-   - `.env` - Default environment file
+   - `.env` - Contains all environment variables
 
-2. **Mobile app level** (required even if variables exist at root level):
-   - `apps/mobile/.env.development` - For development environment
-   - `apps/mobile/.env.staging` - For staging environment (optional)
-   - `apps/mobile/.env.production` - For production environment
-   - `apps/mobile/.env` - Default environment file
+2. **Mobile app level** (required by Expo):
+   - `apps/mobile/.env` - Contains only client-safe variables
 
-Copy the corresponding `.env.example` files to create these files with appropriate values.
+The setup script (`pnpm supabase:setup`) automatically creates these files for local development.
 
 ### Available Environment Variables
 
-#### Root Level (/.env*)
+#### Root Level (/.env)
 
 ```
-# Common variables
-NODE_ENV=development  # Can be development, staging, or production
-
 # Supabase variables
 EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -84,14 +89,19 @@ SUPABASE_PROJECT_REF=your_project_ref
 #### Mobile App Level (/apps/mobile/.env)
 
 ```
-# Required Supabase connection details
+# Required Supabase connection details (only public variables)
 EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
 ### Environment Variable Usage
 
-**Important Note**: The mobile app currently requires its own `.env` file with Supabase connection details, even if they are also defined at the root level. This is due to how Expo handles environment variables.
+**Important Note**: The mobile app requires its own `.env` file with Supabase connection details, even if they are also defined at the root level. This is due to how Expo handles environment variables.
+
+To synchronize environment variables between root and mobile app, run:
+```bash
+./scripts/sync-env.sh
+```
 
 #### In Mobile App:
 
