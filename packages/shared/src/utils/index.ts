@@ -1,2 +1,2 @@
-export * from './logger';
-export * from './supabase';
+export * from "./logger";
+export * from "./supabase";

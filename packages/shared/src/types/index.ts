@@ -1,5 +1,5 @@
-export { Database } from './database';
-export * from './database.interface';
+export { Database } from "./database";
+export * from "./database.interface";
 
 // Additional utility types
 export type Nullable<T> = T | null;
