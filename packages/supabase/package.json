@@ -10,14 +10,14 @@
     "pull": "supabase db pull",
     "push": "supabase db push",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint functions/**/*.ts",
+    "lint": "eslint functions/**/*.ts --fix",
     "gen:types": "supabase gen types typescript --local > ../shared/src/types/database.ts && prettier --write \"../shared/src/types/database.ts\"",
     "deploy": "supabase link --project-ref $SUPABASE_PROJECT_REF && supabase db push",
     "deploy:functions": "supabase functions deploy --project-ref $SUPABASE_PROJECT_REF"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
     "eslint": "^8.45.0",
     "prettier": "^3.0.0",
     "typescript": "^5.1.6"
