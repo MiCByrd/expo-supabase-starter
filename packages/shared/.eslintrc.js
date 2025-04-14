@@ -9,5 +9,10 @@ module.exports = {
 		ecmaFeatures: {
 			jsx: true
 		}
-	}
+	},
+	rules: {
+		"import/export": "off",
+		"@typescript-eslint/no-empty-object-type": "off"
+	},
+	ignorePatterns: ["dist/**/*"]
 };
