@@ -5,8 +5,20 @@
   },
   "files": [],
   "references": [
-    { "path": "./packages/shared" },
-    { "path": "./packages/supabase" },
-    { "path": "./apps/mobile" }
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./packages/supabase"
+    },
+    {
+      "path": "./apps/mobile"
+    }
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
   ]
 }
