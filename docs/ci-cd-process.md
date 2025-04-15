@@ -30,7 +30,8 @@ The following environment variables and secrets are required:
 ### GitHub Secrets
 - `EXPO_TOKEN`: Expo access token for EAS
 - `SUPABASE_ACCESS_TOKEN`: Supabase access token
-- `SUPABASE_PROJECT_ID`: Supabase project ID
+- `SUPABASE_PROJECT_REF`: Supabase project reference ID
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key
 - `SUPABASE_URL`: Production Supabase URL
 - `SUPABASE_ANON_KEY`: Production Supabase anonymous key
 - `SUPABASE_STAGING_URL`: Staging Supabase URL
