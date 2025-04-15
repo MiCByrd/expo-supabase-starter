@@ -18,6 +18,8 @@ This is not supposed to be a template, boilerplate or a framework. It is an opin
 - [🧱 Components And Styling](docs/components-and-styling.md)
 - [🗃️ State Management](docs/state-management.md)
 - [🔄 CI/CD Environment Setup](docs/ci-cd-environments.md)
+- [🔄 CI/CD Process Documentation](docs/ci-cd-process.md)
+- [🔑 GitHub Secrets Setup](docs/github-secrets-setup.md)
 
 ## Structure
 
@@ -58,9 +60,11 @@ This project uses a simplified environment approach focused on local development
 
 2. **CI/CD Environments**:
    - Staging and production environments are handled in CI/CD pipelines
-   - Environment variables are set in your CI/CD platform
+   - Environment variables are set in your CI/CD platform as secrets
    - No environment-specific files needed locally
    - See [CI/CD Environment Setup](docs/ci-cd-environments.md) for details
+   - See [GitHub Secrets Setup Guide](docs/github-secrets-setup.md) for instructions on configuring necessary secrets
+   - See [CI/CD Process Documentation](docs/ci-cd-process.md) for workflow details
 
 ### Required Environment Files
 
