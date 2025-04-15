@@ -1,0 +1,224 @@
+name: Expo Supabase CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Environment variables used across jobs
+env:
+  NODE_VERSION: 18
+  PNPM_VERSION: 10.8.0
+
+jobs:
+  # Detect which parts of the monorepo have changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      supabase-changes: ${{ steps.filter.outputs.supabase }}
+      mobile-changes: ${{ steps.filter.outputs.mobile }}
+      shared-changes: ${{ steps.filter.outputs.shared }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            supabase:
+              - 'packages/supabase/**'
+              - 'supabase/**'
+              - 'config/supabase.ts'
+            mobile:
+              - 'apps/mobile/**'
+              - 'app/**'
+              - 'components/**'
+              - 'constants/**'
+              - 'context/**'
+              - 'assets/**'
+              - 'app.json'
+              - '.expo/**'
+              - 'metro.config.js'
+              - 'babel.config.js'
+            shared:
+              - 'packages/shared/**'
+              - 'lib/**'
+              - 'config/**'
+              - 'tailwind.config.js'
+              - 'tsconfig*.json'
+              - 'package.json'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.env'
+
+  # Install dependencies and run tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run typecheck
+        run: pnpm typecheck
+      
+      - name: Run linting
+        run: pnpm lint
+
+  # Deploy Supabase changes if needed
+  deploy-supabase:
+    needs: [detect-changes, test]
+    if: github.event_name == 'push' && (needs.detect-changes.outputs.supabase-changes == 'true' || needs.detect-changes.outputs.shared-changes == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Run Supabase migrations
+        run: |
+          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+  # Deploy mobile app updates
+  deploy-mobile:
+    needs: [detect-changes, test]
+    if: github.event_name == 'push' && (needs.detect-changes.outputs.mobile-changes == 'true' || needs.detect-changes.outputs.shared-changes == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      # Create environment file for production
+      - name: Create .env file
+        working-directory: apps/mobile
+        run: |
+          cat > .env.local << EOL
+          EXPO_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_ENVIRONMENT=production
+          EOL
+      
+      # Build the mobile app
+      - name: Build mobile
+        run: pnpm --filter mobile build
+      
+      # Deploy OTA Update with EAS
+      - name: Deploy OTA Update
+        working-directory: apps/mobile
+        run: npx eas update --auto --branch production
+        
+  # Create Preview Builds for PRs
+  preview-build:
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'needs-preview')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      # Create a temporary env file for the build pointing to staging
+      - name: Set up staging environment
+        working-directory: apps/mobile
+        run: |
+          cat > .env.local << EOL
+          EXPO_PUBLIC_SUPABASE_URL=${{ secrets.SUPABASE_STAGING_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+          EXPO_PUBLIC_ENVIRONMENT=staging
+          EOL
+      
+      # Build preview version for testing with staging environment
+      - name: Create preview build
+        working-directory: apps/mobile
+        run: npx eas build --platform all --profile preview --non-interactive
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_STAGING_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_STAGING_ANON_KEY }}
+          EXPO_PUBLIC_ENVIRONMENT: staging
+      
+      # Comment build URL on PR
+      - name: Comment Build URL
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const buildUrl = `https://expo.dev/accounts/${process.env.EXPO_ACCOUNT}/projects/${process.env.EXPO_PROJECT}/builds`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Preview build created for testing with **STAGING** environment: [View builds](${buildUrl})`
+            })
+        env:
+          EXPO_ACCOUNT: ${{ secrets.EXPO_ACCOUNT }}
+          EXPO_PROJECT: ${{ secrets.EXPO_PROJECT }}
