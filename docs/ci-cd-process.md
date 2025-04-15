@@ -65,7 +65,8 @@ Runs when changes to mobile app or shared code are detected in the main branch:
 - Deploys OTA updates through EAS
 
 ### 5. Preview Build
-Runs for pull requests with the `needs-preview` label:
+Runs for pull requests with the `needs-preview` label after tests pass:
+- Requires successful test job completion
 - Sets up staging environment variables
 - Creates a preview build for all platforms
 - Comments the build URL on the PR

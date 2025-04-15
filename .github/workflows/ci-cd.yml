@@ -163,6 +163,7 @@ jobs:
         
   # Create Preview Builds for PRs
   preview-build:
+    needs: [test]
     if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'needs-preview')
     runs-on: ubuntu-latest
     steps:
